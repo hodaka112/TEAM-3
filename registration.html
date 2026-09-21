@@ -222,7 +222,7 @@
                 Please fill in the details to register.
             </p>
  
-            <form id="registrationForm">
+            <form id="registrationForm" action="register.php" method="post">
  
                 <!-- Last Name -->
                 <div class="form-group">
@@ -230,6 +230,7 @@
                     <input
                         type="text"
                         id="lastnm"
+                        name="lastnm"
                         placeholder="Enter your Last Name"
                         required
                     >
@@ -241,6 +242,7 @@
                     <input
                         type="text"
                         id="firstnm"
+                        name="firstnm"
                         placeholder="Enter your First Name"
                         required
                     >
@@ -252,6 +254,7 @@
                     <input
                         type="date"
                         id="birthdate"
+                        name="birthdate"
                         required
                     >
                 </div>
@@ -262,6 +265,7 @@
                     <input
                         type="email"
                         id="email"
+                        name="email"
                         placeholder="Enter your email"
                         required
                     >
@@ -273,6 +277,7 @@
                     <input
                         type="text"
                         id="username"
+                        name="username"
                         placeholder="Enter your username"
                         required
                     >
@@ -284,6 +289,7 @@
                     <input
                         type="password"
                         id="password"
+                        name="password"
                         placeholder="Enter your password"
                         required
                     >
@@ -295,6 +301,7 @@
                     <input
                         type="password"
                         id="confirmPassword"
+                        name="confirmPassword"
                         placeholder="Confirm your password"
                         required
                     >
@@ -306,6 +313,7 @@
                     <input
                         type="text"
                         id="contactnum"
+                        name="contactnum"
                         placeholder="Enter your phone number"
                         required
                     >
@@ -316,6 +324,7 @@
                     <label for="address">Address:</label>
                     <textarea
                         id="address"
+                        name="address"
                         rows="3"
                         placeholder="Enter your complete address"
                         required
@@ -332,7 +341,7 @@
  
             <div class="login-link">
                 Already have an account?
-                <a href="login.html">Login</a>
+                <a href="login.php">Login</a>
             </div>
  
         </div>
@@ -342,7 +351,7 @@
     <script>
  
         document.getElementById("registrationForm")
-            .addEventListener("submit", function(event) {
+            .addEventListener("submit", async function(event) {
  
             event.preventDefault();
  
@@ -496,16 +505,39 @@
  
             /* Successful Registration */
  
-            message.textContent =
-                "Registration successful!";
- 
-            message.style.color = "green";
+            try {
+
+                const response = await fetch(this.action, {
+                    method: this.method,
+                    body: new FormData(this),
+                    headers: { "Accept": "application/json" }
+                });
+
+                const result = await response.json();
+
+                message.textContent = result.message;
+                message.style.color = result.success ? "green" : "red";
+
+            } catch (error) {
+
+                message.textContent =
+                    "Unable to complete registration. Please try again.";
+
+                message.style.color = "red";
+
+            }
  
         });
- 
+
+        // Remove a previous result while the user corrects a field.
+        document.getElementById("registrationForm")
+            .addEventListener("input", function() {
+
+                document.getElementById("message").textContent = "";
+
+            });
+
     </script>
  
 </body>
 </html>
- 
- 
