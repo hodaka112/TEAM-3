@@ -89,7 +89,8 @@
         }
  
         input,
-        textarea {
+        textarea,
+        select {
             width: 100%;
             max-width: 100%;
             padding: 12px;
@@ -116,7 +117,8 @@
         }
  
         input:focus,
-        textarea:focus {
+        textarea:focus,
+        select:focus {
             background: #ffffff;
             border-color: var(--sun-orange);
             box-shadow: 0 0 0 3px rgba(245, 124, 31, 0.2);
@@ -223,7 +225,16 @@
             </p>
  
             <form id="registrationForm" action="register.php" method="post">
- 
+
+                <!-- Account Type -->
+                <div class="form-group">
+                    <label for="accountType">Register As:</label>
+                    <select id="accountType" name="accountType" required>
+                        <option value="customer" selected>Customer</option>
+                        <option value="employee">Employee</option>
+                    </select>
+                </div>
+
                 <!-- Last Name -->
                 <div class="form-group">
                     <label for="lastnm">Last Name:</label>
@@ -357,6 +368,9 @@
  
             const lastnm =
                 document.getElementById("lastnm").value.trim();
+
+            const accountType =
+                document.getElementById("accountType").value;
  
             const firstnm =
                 document.getElementById("firstnm").value.trim();
@@ -384,6 +398,19 @@
  
             const message =
                 document.getElementById("message");
+
+
+            /* Account Type */
+
+            if (accountType !== "customer" && accountType !== "employee") {
+
+                message.textContent =
+                    "Please select Customer or Employee.";
+
+                message.style.color = "red";
+
+                return;
+            }
  
  
             /* Last Name */

@@ -20,6 +20,7 @@ function registration_error(string $message): void
 }
 
 $lastnm = registration_value('lastnm');
+$accountType = registration_value('accountType');
 $firstnm = registration_value('firstnm');
 $birthdate = registration_value('birthdate');
 $email = registration_value('email');
@@ -30,6 +31,7 @@ $contactnum = registration_value('contactnum');
 $address = registration_value('address');
 
 // Server-side checks mirror the existing browser-side validation.
+if (!in_array($accountType, ['customer', 'employee'], true)) registration_error('Please select Customer or Employee.');
 if (mb_strlen($lastnm) < 2) registration_error('Please enter your last name.');
 if (mb_strlen($firstnm) < 2) registration_error('Please enter your first name.');
 if ($birthdate === '' || !DateTime::createFromFormat('Y-m-d', $birthdate)) registration_error('Please enter your birthdate.');
@@ -43,11 +45,13 @@ if (mb_strlen($address) < 5) registration_error('Please enter your complete addr
 require __DIR__ . '/db.php';
 
 try {
+    // This value is selected from the allowlist above; it cannot be supplied as arbitrary SQL.
+    $table = $accountType === 'employee' ? 'employees' : 'customers';
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $statement = $connection->prepare(
-        'INSERT INTO customers
+        "INSERT INTO {$table}
          (first_name, last_name, birthdate, email, phone_number, address, username, password)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
     );
     $statement->bind_param(
         'ssssssss',
@@ -67,7 +71,7 @@ try {
     // mysqli strict mode makes prepare(), bind_param(), and execute() throw here.
     // Keep database details out of the browser, but record them in the PHP/Apache error log.
     error_log(
-        'Customer registration database error [MySQL ' . $exception->getCode() . ']: ' . $exception->getMessage()
+        ucfirst($accountType) . ' registration database error [MySQL ' . $exception->getCode() . ']: ' . $exception->getMessage()
     );
 
     $isDuplicate = $exception->getCode() === 1062;
