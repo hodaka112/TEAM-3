@@ -4,28 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sun Son Solar - Registration</title>
- 
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="registration.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="css/registration.css">
 </head>
- 
+
 <body>
- 
+
     <main class="container">
- 
+
         <div class="register-card">
- 
+
             <h2>Register Account</h2>
- 
+
             <p class="subtitle">
                 Please fill in the details to register.
             </p>
- 
+
             <form id="registrationForm" action="register.php" method="post">
 
-                <!-- Account Type -->
                 <div class="form-group">
                     <label for="accountType">Register As:</label>
                     <select id="accountType" name="accountType" required>
@@ -34,19 +36,6 @@
                     </select>
                 </div>
 
-                <!-- Last Name -->
-                <div class="form-group">
-                    <label for="lastnm">Last Name:</label>
-                    <input
-                        type="text"
-                        id="lastnm"
-                        name="lastnm"
-                        placeholder="Enter your Last Name"
-                        required
-                    >
-                </div>
- 
-                <!-- First Name -->
                 <div class="form-group">
                     <label for="firstnm">First Name:</label>
                     <input
@@ -57,8 +46,48 @@
                         required
                     >
                 </div>
- 
-                <!-- Birthdate -->
+
+                <div class="form-group">
+                    <label for="middlenm">Middle Name:</label>
+                    <input
+                        type="text"
+                        id="middlenm"
+                        name="middlenm"
+                        placeholder="Enter your Middle Name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="lastnm">Last Name:</label>
+                    <input
+                        type="text"
+                        id="lastnm"
+                        name="lastnm"
+                        placeholder="Enter your Last Name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender">
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                        <option value="Prefer not to say">Prefer not to say</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="departmentGroup" hidden>
+                    <label for="department">Department:</label>
+                    <select id="department" name="department" disabled>
+                        <option value="">Select department</option>
+                        <option value="Management">Management</option>
+                        <option value="IT">IT</option>
+                    </select>
+                </div>
+
                 <div class="form-group">
                     <label for="birthdate">Birthdate:</label>
                     <input
@@ -68,8 +97,7 @@
                         required
                     >
                 </div>
- 
-                <!-- Email -->
+
                 <div class="form-group">
                     <label for="email">Email:</label>
                     <input
@@ -80,8 +108,7 @@
                         required
                     >
                 </div>
- 
-                <!-- Username -->
+
                 <div class="form-group">
                     <label for="username">Username:</label>
                     <input
@@ -92,8 +119,7 @@
                         required
                     >
                 </div>
- 
-                <!-- Password -->
+
                 <div class="form-group">
                     <label for="password">Password:</label>
                     <input
@@ -104,8 +130,7 @@
                         required
                     >
                 </div>
- 
-                <!-- Confirm Password -->
+
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password:</label>
                     <input
@@ -116,8 +141,7 @@
                         required
                     >
                 </div>
- 
-                <!-- Phone Number -->
+
                 <div class="form-group">
                     <label for="contactnum">Phone Number:</label>
                     <input
@@ -128,8 +152,7 @@
                         required
                     >
                 </div>
- 
-                <!-- Address -->
+
                 <div class="form-group">
                     <label for="address">Address:</label>
                     <textarea
@@ -140,230 +163,20 @@
                         required
                     ></textarea>
                 </div>
- 
+
                 <button type="submit" class="register-btn">
                     Register
                 </button>
- 
+
                 <p id="message"></p>
- 
+
             </form>
- 
-            <div class="login-link">
-                Already have an account?
-                <a href="login.php">Login</a>
-            </div>
- 
+
         </div>
- 
+
     </main>
- 
-    <script>
- 
-        document.getElementById("registrationForm")
-            .addEventListener("submit", async function(event) {
- 
-            event.preventDefault();
- 
-            const lastnm =
-                document.getElementById("lastnm").value.trim();
 
-            const accountType =
-                document.getElementById("accountType").value;
- 
-            const firstnm =
-                document.getElementById("firstnm").value.trim();
- 
-            const birthdate =
-                document.getElementById("birthdate").value;
- 
-            const email =
-                document.getElementById("email").value.trim();
- 
-            const username =
-                document.getElementById("username").value.trim();
- 
-            const password =
-                document.getElementById("password").value;
- 
-            const confirmPassword =
-                document.getElementById("confirmPassword").value;
- 
-            const contactnum =
-                document.getElementById("contactnum").value.trim();
- 
-            const address =
-                document.getElementById("address").value.trim();
- 
-            const message =
-                document.getElementById("message");
+    <script src="js/registration.js"></script>
 
-
-            /* Account Type */
-
-            if (accountType !== "customer" && accountType !== "employee") {
-
-                message.textContent =
-                    "Please select Customer or Employee.";
-
-                message.style.color = "red";
-
-                return;
-            }
- 
- 
-            /* Last Name */
- 
-            if (lastnm.length < 2) {
- 
-                message.textContent =
-                    "Please enter your last name.";
- 
-                message.style.color = "red";
- 
-                return;
-            }
- 
- 
-            /* First Name */
- 
-            if (firstnm.length < 2) {
- 
-                message.textContent =
-                    "Please enter your first name.";
- 
-                message.style.color = "red";
- 
-                return;
-            }
- 
- 
-            /* Birthdate */
- 
-            if (birthdate === "") {
- 
-                message.textContent =
-                    "Please enter your birthdate.";
- 
-                message.style.color = "red";
- 
-                return;
-            }
- 
- 
-            /* Email */
- 
-            if (email === "") {
- 
-                message.textContent =
-                    "Please enter your email.";
- 
-                message.style.color = "red";
- 
-                return;
-            }
- 
- 
-            /* Username */
- 
-            if (username.length < 3) {
- 
-                message.textContent =
-                    "Username must be at least 3 characters.";
- 
-                message.style.color = "red";
- 
-                return;
-            }
- 
- 
-            /* Password */
- 
-            if (password.length < 8) {
- 
-                message.textContent =
-                    "Password must be at least 8 characters.";
- 
-                message.style.color = "red";
- 
-                return;
-            }
- 
- 
-            /* Confirm Password */
- 
-            if (password !== confirmPassword) {
- 
-                message.textContent =
-                    "Passwords do not match.";
- 
-                message.style.color = "red";
- 
-                return;
-            }
- 
- 
-            /* Phone Number */
- 
-            if (!/^09[0-9]{9}$/.test(contactnum)) {
- 
-                message.textContent =
-                    "Please enter a valid 11-digit phone number starting with 09.";
- 
-                message.style.color = "red";
- 
-                return;
-            }
- 
- 
-            /* Address */
- 
-            if (address.length < 5) {
- 
-                message.textContent =
-                    "Please enter your complete address.";
- 
-                message.style.color = "red";
- 
-                return;
-            }
- 
- 
-            /* Successful Registration */
- 
-            try {
-
-                const response = await fetch(this.action, {
-                    method: this.method,
-                    body: new FormData(this),
-                    headers: { "Accept": "application/json" }
-                });
-
-                const result = await response.json();
-
-                message.textContent = result.message;
-                message.style.color = result.success ? "green" : "red";
-
-            } catch (error) {
-
-                message.textContent =
-                    "Unable to complete registration. Please try again.";
-
-                message.style.color = "red";
-
-            }
- 
-        });
-
-        // Remove a previous result while the user corrects a field.
-        document.getElementById("registrationForm")
-            .addEventListener("input", function() {
-
-                document.getElementById("message").textContent = "";
-
-            });
-
-    </script>
- 
 </body>
 </html>

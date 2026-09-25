@@ -21,6 +21,9 @@ function registration_error(string $message): void
 
 $lastnm = registration_value('lastnm');
 $accountType = registration_value('accountType');
+$middleName = registration_value('middlenm');
+$gender = registration_value('gender');
+$department = registration_value('department');
 $firstnm = registration_value('firstnm');
 $birthdate = registration_value('birthdate');
 $email = registration_value('email');
@@ -30,40 +33,92 @@ $confirmPassword = $_POST['confirmPassword'] ?? '';
 $contactnum = registration_value('contactnum');
 $address = registration_value('address');
 
-// Server-side checks mirror the existing browser-side validation.
-if (!in_array($accountType, ['customer', 'employee'], true)) registration_error('Please select Customer or Employee.');
-if (mb_strlen($lastnm) < 2) registration_error('Please enter your last name.');
-if (mb_strlen($firstnm) < 2) registration_error('Please enter your first name.');
-if ($birthdate === '' || !DateTime::createFromFormat('Y-m-d', $birthdate)) registration_error('Please enter your birthdate.');
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) registration_error('Please enter your email.');
-if (mb_strlen($username) < 3) registration_error('Username must be at least 3 characters.');
-if (strlen($password) < 8) registration_error('Password must be at least 8 characters.');
-if ($password !== $confirmPassword) registration_error('Passwords do not match.');
-if (!preg_match('/^09[0-9]{9}$/', $contactnum)) registration_error('Please enter a valid 11-digit phone number starting with 09.');
-if (mb_strlen($address) < 5) registration_error('Please enter your complete address.');
+if (!in_array($accountType, ['customer', 'employee'], true)) {
+    registration_error('Please select Customer or Employee.');
+}
+if (mb_strlen($lastnm) < 2) {
+    registration_error('Please enter your last name.');
+}
+if (mb_strlen($firstnm) < 2) {
+    registration_error('Please enter your first name.');
+}
+if ($gender !== '' && !in_array($gender, ['Male', 'Female', 'Other', 'Prefer not to say'], true)) {
+    registration_error('Please select a valid gender.');
+}
+if ($gender === '') {
+    $gender = null;
+}
+if ($accountType === 'employee' && !in_array($department, ['Management', 'IT'], true)) {
+    registration_error('Please select a department.');
+}
+if ($birthdate === '' || !DateTime::createFromFormat('Y-m-d', $birthdate)) {
+    registration_error('Please enter your birthdate.');
+}
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    registration_error('Please enter your email.');
+}
+if (mb_strlen($username) < 3) {
+    registration_error('Username must be at least 3 characters.');
+}
+if (strlen($password) < 8) {
+    registration_error('Password must be at least 8 characters.');
+}
+if ($password !== $confirmPassword) {
+    registration_error('Passwords do not match.');
+}
+if (!preg_match('/^09[0-9]{9}$/', $contactnum)) {
+    registration_error('Please enter a valid 11-digit phone number starting with 09.');
+}
+if (mb_strlen($address) < 5) {
+    registration_error('Please enter your complete address.');
+}
 
 require __DIR__ . '/db.php';
 
 try {
-    // This value is selected from the allowlist above; it cannot be supplied as arbitrary SQL.
-    $table = $accountType === 'employee' ? 'employees' : 'customers';
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    $statement = $connection->prepare(
-        "INSERT INTO {$table}
-         (first_name, last_name, birthdate, email, phone_number, address, username, password)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-    );
-    $statement->bind_param(
-        'ssssssss',
-        $firstnm,
-        $lastnm,
-        $birthdate,
-        $email,
-        $contactnum,
-        $address,
-        $username,
-        $hashedPassword
-    );
+    if ($accountType === 'employee') {
+        $statement = $connection->prepare(
+            'INSERT INTO employees
+             (first_name, middle_name, last_name, birthdate, gender,
+              email, phone_number, address, username, password, department)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        );
+        $statement->bind_param(
+            'sssssssssss',
+            $firstnm,
+            $middleName,
+            $lastnm,
+            $birthdate,
+            $gender,
+            $email,
+            $contactnum,
+            $address,
+            $username,
+            $hashedPassword,
+            $department
+        );
+    } else {
+        $statement = $connection->prepare(
+            'INSERT INTO customers
+             (first_name, middle_name, last_name, birthdate, gender,
+              email, phone_number, address, username, password)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        );
+        $statement->bind_param(
+            'ssssssssss',
+            $firstnm,
+            $middleName,
+            $lastnm,
+            $birthdate,
+            $gender,
+            $email,
+            $contactnum,
+            $address,
+            $username,
+            $hashedPassword
+        );
+    }
     $statement->execute();
 
     echo json_encode(['success' => true, 'message' => 'Registration successful!']);
@@ -71,7 +126,11 @@ try {
     // mysqli strict mode makes prepare(), bind_param(), and execute() throw here.
     // Keep database details out of the browser, but record them in the PHP/Apache error log.
     error_log(
-        ucfirst($accountType) . ' registration database error [MySQL ' . $exception->getCode() . ']: ' . $exception->getMessage()
+        ucfirst($accountType)
+            . ' registration database error [MySQL '
+            . $exception->getCode()
+            . ']: '
+            . $exception->getMessage()
     );
 
     $isDuplicate = $exception->getCode() === 1062;

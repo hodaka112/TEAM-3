@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS customers (
     middle_name VARCHAR(50),
     last_name VARCHAR(50) NOT NULL,
     birthdate DATE,
-    gender ENUM('Male','Female','Other'),
+    gender ENUM('Male','Female','Other','Prefer not to say'),
     email VARCHAR(100) NOT NULL UNIQUE,
     phone_number VARCHAR(15),
     address TEXT,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS employees (
     middle_name VARCHAR(50),
     last_name VARCHAR(50) NOT NULL,
     birthdate DATE,
-    gender ENUM('Male','Female','Other'),
+    gender ENUM('Male','Female','Other','Prefer not to say'),
     email VARCHAR(100) NOT NULL UNIQUE,
     phone_number VARCHAR(15),
     address TEXT,
@@ -35,9 +35,27 @@ CREATE TABLE IF NOT EXISTS employees (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE customers
+    MODIFY gender ENUM('Male', 'Female', 'Other', 'Prefer not to say') NULL;
+
+ALTER TABLE employees
+    MODIFY gender ENUM('Male', 'Female', 'Other', 'Prefer not to say') NULL;
+
 -- Kat's password is stored only as a password_hash() value.
-INSERT INTO employees (first_name, last_name, username, password, department)
-VALUES ('Katherine', 'Sinagaraw', 'KittyKat16', '$2y$10$fOaTOB74JfPzWdPw3Hiy..7pspk1fSR9d2mhqa63lbGGeDbWV8l1e', 'Management')
+INSERT INTO employees (
+    first_name,
+    last_name,
+    username,
+    password,
+    department
+)
+VALUES (
+    'Katherine',
+    'Sinagaraw',
+    'KittyKat16',
+    '$2y$10$fOaTOB74JfPzWdPw3Hiy..7pspk1fSR9d2mhqa63lbGGeDbWV8l1e',
+    'Management'
+)
 ON DUPLICATE KEY UPDATE username = username;
 
 -- Sol's INSERT is intentionally deferred until she supplies her chosen username.
